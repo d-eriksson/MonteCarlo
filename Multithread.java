@@ -18,6 +18,9 @@ class Multithread implements Runnable {
           scene.render(start, end);
           latch.countDown();
       }
-      catch (Exception e){System.out.println ("Exception is caught");}
+      catch (Exception e){
+          System.out.println ("Exception is caught");
+          e.printStackTrace();
+      }
   }
 }

@@ -225,6 +225,7 @@ public class Scene{
         Ray r;
         ColorDbl temp;
 
+        //Normal Loop
         for(int j = start; j < end; ++j){
             for(int i = 0; i < camera.Width; ++i){
                 temp = new ColorDbl();
@@ -241,5 +242,38 @@ public class Scene{
                 camera.bimg.setRGB(i,j,temp.RGBForImage());
             }
         }
-    }
-}
+/*
+        //Spiral Loop
+        int x,y,dx,dy;
+        int halfWidth = camera.Width/2;
+        x = y = halfWidth;
+        int t = camera.Width;
+        int num_pix = t*t;
+        for(int i = 0; i < num_pix; i++){
+            int xp = x + halfWidth;
+            int yp = y + halfWidth;
+
+            if(xp >= 0 && xp < N && yp >= 0 && yp < M){
+                      //Do stuff:
+                      temp = new ColorDbl();
+                      for(int k = 0; k<camera.subpixels; ++k){
+                          for(int l = 0; l<camera.subpixels; ++l){
+                              endPoint = new Vector3d(camera.eye.x+camera.fov, -xp*PixelSize - halfSubPixel-k*subPixelSize + 1 + camera.eye.y, -yp*PixelSize - halfSubPixel-l*subPixelSize + 1 + camera.eye.z);
+                              r = new Ray(camera.eye, endPoint, true);
+                              temp.sumColor(CastRay(r,0,0));
+                          }
+                      }
+                      temp.multiply(subPixelFactor);
+                      temp.clamp();
+                      camera.pixelList[x][y] = temp;
+                      camera.bimg.setRGB(x,y,temp.RGBForImage());
+            }
+
+            if(abs(x) <= abs(y) && (x != y || x >= 0))
+            x += ((y >= 0) ? 1 : -1);
+            else
+            y += ((x >= 0) ? -1 : 1);
+        }
+*/
+    }//render() ends
+}//Camera ends
