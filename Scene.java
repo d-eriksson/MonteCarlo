@@ -26,9 +26,9 @@ public class Scene{
         Vector3d CeilingRD = new Vector3d(10.0,-6.0,5.0);
         Vector3d CeilingRM = new Vector3d(13.0,0.0,5.0);
 
-        Vector3d CeilingLight1 = new Vector3d(7.0,-2,4.999999999);
-        Vector3d CeilingLight2 = new Vector3d(11.0,-2,4.999999999);
-        Vector3d CeilingLight3 = new Vector3d(11.0, 2,4.999999999);
+        Vector3d CeilingLight1 = new Vector3d(8.0,-1,4.999999999);
+        Vector3d CeilingLight2 = new Vector3d(10.0,-1,4.999999999);
+        Vector3d CeilingLight3 = new Vector3d(10.0, 1,4.999999999);
 
         Vector3d FloorLM = new Vector3d(-3.0,0.0,-5.0);
         Vector3d FloorLU = new Vector3d(0.0,6.0,-5.0);
@@ -226,7 +226,6 @@ public class Scene{
         ColorDbl temp;
 
         for(int j = start; j < end; ++j){
-            //Utilities.updateProgress( (double) j/camera.Width); //adds 2-3 seconds to all renders
             for(int i = 0; i < camera.Width; ++i){
                 temp = new ColorDbl();
                 for(int k = 0; k<camera.subpixels; ++k){

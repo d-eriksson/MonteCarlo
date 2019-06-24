@@ -90,6 +90,7 @@ static Vector3d FindOrthogonalVector(Vector3d V1, Vector3d V2){
   Vector3d V = vecCross(V1, V2);
   return vecNormalize(V);
 }
+/*
 static void updateProgress(double progressPercentage) {
     final int width = 50; // progress bar width in chars
 
@@ -104,4 +105,5 @@ static void updateProgress(double progressPercentage) {
     System.out.print("]" + (int)(progressPercentage*100) + "%");
 }
 //End of utility functions **********************************************
+*/
 }
