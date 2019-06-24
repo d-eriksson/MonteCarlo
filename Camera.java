@@ -35,20 +35,11 @@ public class Camera  {
             System.out.println("Error: " +e );
         }
     }
-    void draw(){
-        BufferedImage img = new BufferedImage(Width,Width, BufferedImage.TYPE_INT_RGB);
-        for(int y = 0; y < Width; y++){
-            for(int x = 0; x < Width; x++){
-                int rgb = pixelList[x][y].RGBForImage();
-                img.setRGB(x,y,rgb);
-            }
-        }
-    }
     public static void main(String[] args) throws IOException{
         long startTime = System.nanoTime();
 
         //Create Camera
-        Camera c = new Camera(1080, Integer.parseInt(args[5]), new Vector3d(-2.0,0.0,0.0),1.25);
+        Camera c = new Camera(800, Integer.parseInt(args[5]), new Vector3d(-2.0,0.0,0.0),1.25);
         Settings setting = new Settings();
         setting.setChildren(Integer.parseInt(args[0]));
         setting.setDepthDecay(Double.parseDouble(args[1]));
@@ -87,7 +78,6 @@ public class Camera  {
 
         //Write file
         c.write("C" + args[0] + "-DD"  + args[1] + "-SR"  + args[2] + "-RB"  + args[3] + "-MD"  + args[4] + "-AA"  + args[5]);
-        c.draw();
 
         long endTime = System.nanoTime();
         System.out.println("\nExecution time: " + (endTime-startTime)/1000000000.0+"s");
