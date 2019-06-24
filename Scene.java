@@ -238,6 +238,7 @@ public class Scene{
                 temp.multiply(subPixelFactor);
                 temp.clamp();
                 camera.pixelList[i][j] = temp;
+                camera.bimg.setRGB(i,j,temp.RGBForImage());
             }
         }
     }

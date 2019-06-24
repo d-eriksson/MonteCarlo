@@ -4,19 +4,48 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-public class Camera  {
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.Timer;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Dimension;
+import java.awt.event.*;
+
+public class Camera extends JPanel implements ActionListener {
     int Width;
     Vector3d eye;
     int subpixels;
     double fov;
     ColorDbl[][] pixelList;
+    BufferedImage bimg;
+    Timer timer = new Timer(20, this);
+
     Camera(int w, int s, Vector3d e, double f){
         Width = w;
         subpixels = s;
         eye = e;
         fov = f;
         pixelList = new ColorDbl[w][w];
+        bimg = new BufferedImage(w, w, BufferedImage.TYPE_INT_RGB);
+        timer.start();
     }
+
+    //JPanel code
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.drawImage(bimg, 0, 0, this);
+        g2d.dispose();
+    }
+    //Update JPanel
+    public void actionPerformed(ActionEvent ev){
+        if(ev.getSource()==timer){
+            repaint();// this will call at every 1 second
+        }
+    }
+
     //Write data to a PNG
     void write(String filename){
         File file = null;
@@ -47,7 +76,15 @@ public class Camera  {
         setting.setMaxReflectionBounces(Integer.parseInt(args[3]));
         setting.setMaxDepth(Integer.parseInt(args[4]));
 
-        //Create Scenes for each thread
+        //Create JFrame
+        JFrame frame = new JFrame("Rendering preview");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(c.Width,c.Width));
+        frame.add(c);
+        frame.pack();
+        frame.setVisible(true);
+
+        //Create independent identical scenes for each thread
         int threads = Runtime.getRuntime().availableProcessors();
         System.out.println("Found " + threads + " CPU cores.");
         CountDownLatch latch = new CountDownLatch(threads);
