@@ -18,17 +18,18 @@ public class Camera extends JPanel implements ActionListener {
     int subpixels;
     double fov;
     ColorDbl[][] pixelList;
+    int progress;
     BufferedImage bimg;
-    Timer timer = new Timer(20, this);
+    Timer timer = new Timer(100, this);
 
     Camera(int w, int s, Vector3d e, double f){
         Width = w;
         subpixels = s;
         eye = e;
         fov = f;
+        progress = 0;
         pixelList = new ColorDbl[w][w];
         bimg = new BufferedImage(w, w, BufferedImage.TYPE_INT_RGB);
-        timer.start();
     }
 
     //JPanel code
@@ -43,7 +44,23 @@ public class Camera extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent ev){
         if(ev.getSource()==timer){
             repaint();// this will call at every 1 second
+            updateProgress();
         }
+    }
+
+    //Update progress
+    public void updateProgress(){
+        final int w = 50; // progress bar width in chars
+        double progressPercentage = ((double)progress)/Width;
+        System.out.print("\r[");
+        int i = 0;
+        for (; i <= (int)(progressPercentage*w); i++) {
+          System.out.print(".");
+        }
+        for (; i < w; i++) {
+          System.out.print(" ");
+        }
+        System.out.print("]" + (int)(progressPercentage*100) + "%");
     }
 
     //Write data to a PNG
@@ -107,11 +124,15 @@ public class Camera extends JPanel implements ActionListener {
             T.start();
         }
 
+        //Start JFrame refreshing
+        c.timer.start();
         //Wait for threads
         try{
             latch.await();
         }
         catch(InterruptedException e){}
+        //Stop JFrame refreshing
+        c.timer.stop();
 
         //Write file
         c.write("C" + args[0] + "-DD"  + args[1] + "-SR"  + args[2] + "-RB"  + args[3] + "-MD"  + args[4] + "-AA"  + args[5]);

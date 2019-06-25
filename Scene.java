@@ -241,6 +241,7 @@ public class Scene{
                 camera.pixelList[i][j] = temp;
                 camera.bimg.setRGB(i,j,temp.RGBForImage());
             }
+            camera.progress++;
         }
 /*
         //Spiral Loop
