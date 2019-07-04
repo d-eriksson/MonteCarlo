@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Dimension;
 import java.awt.event.*;
+import java.text.DecimalFormat;
 
 public class Camera extends JPanel implements ActionListener {
     int Width;
@@ -19,8 +20,12 @@ public class Camera extends JPanel implements ActionListener {
     double fov;
     ColorDbl[][] pixelList;
     int progress;
+    double time;
     BufferedImage bimg;
-    Timer timer = new Timer(100, this);
+    int drawinterval = 100;
+    Timer timer = new Timer(drawinterval, this);
+    JFrame frame;
+    DecimalFormat df = new DecimalFormat("#.#");
 
     Camera(int w, int s, Vector3d e, double f){
         Width = w;
@@ -28,8 +33,15 @@ public class Camera extends JPanel implements ActionListener {
         eye = e;
         fov = f;
         progress = 0;
+        time = System.nanoTime();
         pixelList = new ColorDbl[w][w];
         bimg = new BufferedImage(w, w, BufferedImage.TYPE_INT_RGB);
+        frame = new JFrame("Rendering preview");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(w+16,w+39)); //16 and 39 are the borders of the window, hard coded for now
+        frame.add(this);
+        frame.pack();
+        frame.setVisible(true);
     }
 
     //JPanel code
@@ -43,8 +55,21 @@ public class Camera extends JPanel implements ActionListener {
     //Update JPanel
     public void actionPerformed(ActionEvent ev){
         if(ev.getSource()==timer){
-            repaint();// this will call at every 1 second
-            updateProgress();
+            repaint();
+            //updateProgress();
+            updateTitle();
+        }
+    }
+
+    //Update title bar
+    public void updateTitle(){
+        double progressPercentage = ((double)progress)/Width; //Progress 0.0-1.0
+        double elapsed = (System.nanoTime()-time)/1000000000.0; //Elapsed time in seconds
+        if(progress>0){
+            double eta = (elapsed/progressPercentage);
+            frame.setTitle("Rendering: " + df.format(100*progressPercentage) + "% | remaining: " + df.format(eta-elapsed) + "s"); //progress 0-100%
+        }else{
+            frame.setTitle("Rendering: 0.0% | Calculating eta...");
         }
     }
 
@@ -93,14 +118,6 @@ public class Camera extends JPanel implements ActionListener {
         setting.setMaxReflectionBounces(Integer.parseInt(args[3]));
         setting.setMaxDepth(Integer.parseInt(args[4]));
 
-        //Create JFrame
-        JFrame frame = new JFrame("Rendering preview");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(c.Width,c.Width));
-        frame.add(c);
-        frame.pack();
-        frame.setVisible(true);
-
         //Create independent identical scenes for each thread
         int threads = Runtime.getRuntime().availableProcessors();
         System.out.println("Found " + threads + " CPU cores.");
@@ -129,6 +146,7 @@ public class Camera extends JPanel implements ActionListener {
         //Wait for threads
         try{
             latch.await();
+            Thread.sleep(c.drawinterval);
         }
         catch(InterruptedException e){}
         //Stop JFrame refreshing
@@ -138,6 +156,7 @@ public class Camera extends JPanel implements ActionListener {
         c.write("C" + args[0] + "-DD"  + args[1] + "-SR"  + args[2] + "-RB"  + args[3] + "-MD"  + args[4] + "-AA"  + args[5]);
 
         long endTime = System.nanoTime();
+        c.frame.setTitle("Rendering completed in " + (endTime-startTime)/1000000000.0+"s");
         System.out.println("\nExecution time: " + (endTime-startTime)/1000000000.0+"s");
     }
 }
